@@ -1,2 +1,3 @@
 payload:
   - '+.hkssnetwork.org'
+  - '+.qnapclub.eu'
