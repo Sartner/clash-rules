@@ -2,3 +2,4 @@ payload:
   - '+.myqnapcloud.com'
   - '+.douyucdn.cn'
   - '+.dz11.com'
+  - '+.ls.apple.com'
