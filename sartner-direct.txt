@@ -1,5 +1,8 @@
 payload:
   - '+.myqnapcloud.com'
   - '+.douyucdn.cn'
+  - '+.douyu.com'
   - '+.dz11.com'
   - '+.ls.apple.com'
+  - '+.ocean-web.com'
+  - '+.ocean-bp.com'
