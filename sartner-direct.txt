@@ -6,3 +6,4 @@ payload:
   - '+.ls.apple.com'
   - '+.ocean-web.com'
   - '+.ocean-bp.com'
+  - '+.s7p7.top'
