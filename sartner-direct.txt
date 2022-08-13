@@ -4,4 +4,6 @@ payload:
   - '+.clash.razord.top'
   - '+.yacd.haishan.me'
   - '+.streampipe.akamaized.net'
+  - '+.streampipe.steamcontent.com'
+  - '+.cm.steampowered.com'
   - '+.download.epicgames.com'
