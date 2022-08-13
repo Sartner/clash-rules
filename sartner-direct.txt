@@ -3,3 +3,4 @@ payload:
   - '+.ls.apple.com'
   - '+.clash.razord.top'
   - '+.yacd.haishan.me'
+  - '+.streampipe.akamaized.net'
