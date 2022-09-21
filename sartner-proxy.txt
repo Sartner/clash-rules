@@ -1,4 +1,3 @@
 payload:
-  - '+.hkssnetwork.org'
-  - '+.faster.buzz'
-  - '+.qnapclub.eu'
+  - DOMAIN-SUFFIX,hkssnetwork.org
+  - DOMAIN-SUFFIX,qnapclub.eu
