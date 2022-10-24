@@ -7,5 +7,4 @@ payload:
   - DOMAIN-SUFFIX,steampipe.steamcontent.com
   - DOMAIN-SUFFIX,cm.steampowered.com
   - DOMAIN-SUFFIX,download.epicgames.com
-  - DOMAIN-SUFFIX,pterclub.com
   - PROCESS-NAME,wxedged
