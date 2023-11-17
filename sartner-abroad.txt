@@ -4,3 +4,4 @@ payload:
   - DOMAIN-SUFFIX,bing.com
   - DOMAIN-SUFFIX,bingapis.com
   - DOMAIN-SUFFIX,asksage.ai
+  - DOMAIN-SUFFIX,themoviedb.org
