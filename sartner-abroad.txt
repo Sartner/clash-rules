@@ -5,3 +5,4 @@ payload:
   - DOMAIN-SUFFIX,bingapis.com
   - DOMAIN-SUFFIX,asksage.ai
   - DOMAIN-SUFFIX,themoviedb.org
+  - DOMAIN-SUFFIX,bard.google.com
