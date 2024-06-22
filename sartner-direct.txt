@@ -13,4 +13,15 @@ payload:
   - DOMAIN-SUFFIX,dl.playstation.net
   - DOMAIN-SUFFIX,test-ipv6.com
   - DOMAIN-SUFFIX,internal
+  - DOMAIN-SUFFIX,fanatical.com
+  - DOMAIN-SUFFIX,humblebundle.com
+  - DOMAIN-SUFFIX,steamcommunity.com
+  - DOMAIN-SUFFIX,steampowered.com
+  - DOMAIN-SUFFIX,steamstatic.com
+  - DOMAIN-SUFFIX,steam-chat.com
+  - DOMAIN-SUFFIX,steamusercontent.com
+  - DOMAIN-SUFFIX,valvesoftware.com
+  - DOMAIN-KEYWORD,steamuserimages
+  - DOMAIN-KEYWORD,steamcontent
   - PROCESS-NAME,wxedged
+  - PROCESS-NAME,steam.exe
