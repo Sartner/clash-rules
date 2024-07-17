@@ -4,9 +4,6 @@ payload:
   - DOMAIN-SUFFIX,ls.apple.com
   - DOMAIN-SUFFIX,clash.razord.top
   - DOMAIN-SUFFIX,yacd.haishan.me
-  - DOMAIN-SUFFIX,steampipe.akamaized.net
-  - DOMAIN-SUFFIX,steamcontent.com
-  - DOMAIN-SUFFIX,cm.steampowered.com
   - DOMAIN-SUFFIX,download.epicgames.com
   - DOMAIN-SUFFIX,tekqart.com
   - DOMAIN-SUFFIX,llnwd.net
@@ -15,12 +12,7 @@ payload:
   - DOMAIN-SUFFIX,internal
   - DOMAIN-SUFFIX,fanatical.com
   - DOMAIN-SUFFIX,humblebundle.com
-  - DOMAIN-SUFFIX,steamcommunity.com
-  - DOMAIN-SUFFIX,steamstatic.com
-  - DOMAIN-SUFFIX,steam-chat.com
-  - DOMAIN-SUFFIX,steamusercontent.com
+  - DOMAIN-SUFFIX,cm.steampowered.com,DIRECT
+  - DOMAIN-SUFFIX,steamserver.net,DIRECT
   - DOMAIN-SUFFIX,valvesoftware.com
-  - DOMAIN-KEYWORD,steamuserimages
-  - DOMAIN-KEYWORD,steamcontent
   - PROCESS-NAME,wxedged
-  - PROCESS-NAME,steam.exe
