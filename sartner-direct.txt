@@ -12,7 +12,7 @@ payload:
   - DOMAIN-SUFFIX,internal
   - DOMAIN-SUFFIX,fanatical.com
   - DOMAIN-SUFFIX,humblebundle.com
-  - DOMAIN-SUFFIX,cm.steampowered.com,DIRECT
-  - DOMAIN-SUFFIX,steamserver.net,DIRECT
+  - DOMAIN-SUFFIX,cm.steampowered.com
+  - DOMAIN-SUFFIX,steamserver.net
   - DOMAIN-SUFFIX,valvesoftware.com
   - PROCESS-NAME,wxedged
