@@ -6,3 +6,4 @@ payload:
   - DOMAIN-SUFFIX,asksage.ai
   - DOMAIN-SUFFIX,themoviedb.org
   - DOMAIN-SUFFIX,bard.google.com
+  - DOMAIN-SUFFIX,m-team.cc
