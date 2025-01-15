@@ -2,6 +2,8 @@ payload:
   - DOMAIN-SUFFIX,openai.com
   - DOMAIN-SUFFIX,chatgpt.com
   - DOMAIN-SUFFIX,gemini.google.com
+  - DOMAIN-SUFFIX,poe.com
+  - DOMAIN-SUFFIX,claude.ai
   - DOMAIN-SUFFIX,deepl.com
   - DOMAIN-SUFFIX,bing.com
   - DOMAIN-SUFFIX,bingapis.com
