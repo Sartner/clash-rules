@@ -1,6 +1,19 @@
 # 本规则主要包含了一些无法使用香港节点的域名，主要是一些AI相关的服务
 # 最好使用故障转移模式以降低节点切换概率
 
+DOMAIN-SUFFIX,openai.com
+DOMAIN-SUFFIX,chatgpt.com
+DOMAIN-SUFFIX,gemini.google.com
+DOMAIN-SUFFIX,poe.com
+DOMAIN-SUFFIX,claude.ai
+DOMAIN-SUFFIX,deepl.com
+DOMAIN-SUFFIX,bing.com
+DOMAIN-SUFFIX,bingapis.com
+DOMAIN-SUFFIX,asksage.ai
+DOMAIN-SUFFIX,themoviedb.org
+DOMAIN-SUFFIX,bard.google.com
+DOMAIN-SUFFIX,m-team.cc
+
 # cursor
 DOMAIN-SUFFIX,cursor.sh
 DOMAIN-SUFFIX,cursor-cdn.com
