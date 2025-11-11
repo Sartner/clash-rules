@@ -1,6 +1,6 @@
 # NAME: 社交媒体规则 (合并版)
 # DESCRIPTION: 包含Twitter、Facebook等社交媒体规则
-# UPDATED: 2025-11-11 08:29:59
+# UPDATED: 2025-11-11 09:51:53
 # MD5 (Payload): 74a03bc02de861ec463fd54934db6237
 
 # SOURCES:
@@ -622,5 +622,3 @@ payload:
 - IP-CIDR,54.93.124.31/32
 - IP-ASN,32934
 - DOMAIN-KEYWORD,instagram
-
-version: 1
