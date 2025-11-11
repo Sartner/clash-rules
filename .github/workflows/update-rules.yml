@@ -110,14 +110,14 @@ jobs:
 
           echo "✅ MD5计算完成"
 
-      # 获取上次提交的MD5值
-      - name: 获取上次提交的MD5值
+      # 获取当前HEAD中的MD5值
+      - name: 获取当前HEAD中的MD5值
         id: previous
         run: |
-          # 获取上次提交中对应的文件
-          PREV_COMMIT=$(git rev-parse HEAD~1 2>/dev/null || echo "HEAD~1 does not exist")
+          # 使用当前HEAD
+          CURRENT_COMMIT=$(git rev-parse HEAD)
 
-          echo "📖 上次提交: $PREV_COMMIT"
+          echo "📖 当前分支: $CURRENT_COMMIT"
 
           # 动态获取输出文件列表
           OUTPUT_FILES=$(python3 -c "
@@ -131,17 +131,17 @@ jobs:
           # 提取文件名（去掉路径）
           BASENAME_FILES=$(echo $OUTPUT_FILES | sed 's|../rules/||g')
 
-          # 计算上次提交的MD5摘要
+          # 计算当前HEAD中的MD5摘要
           PREV_MD5_SUM=""
           for file in $OUTPUT_FILES; do
             # 提取文件名前缀
             filename=$(basename "$file")
-            if git show $PREV_COMMIT:rules/$filename > /tmp/prev_$filename 2>/dev/null; then
+            if git show $CURRENT_COMMIT:rules/$filename > /tmp/prev_$filename 2>/dev/null; then
               PREV_MD5=$(md5sum /tmp/prev_$filename | awk '{print $1}')
               PREV_MD5_SUM="${PREV_MD5_SUM}${file}:${PREV_MD5} "
-              echo "上次 $filename MD5: $PREV_MD5"
+              echo "当前HEAD $filename MD5: $PREV_MD5"
             else
-              echo "⚠️  未找到上次提交的 $filename 文件"
+              echo "⚠️  当前HEAD中未找到 $filename 文件"
             fi
           done
 
