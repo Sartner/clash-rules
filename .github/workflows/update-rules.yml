@@ -1,0 +1,231 @@
+# =============================================================================
+# GitHub Action - Clash Rules 自动更新工作流
+# =============================================================================
+# 每天凌晨4点自动检查并更新规则文件
+# 如果MD5值发生变化，则提交新版本
+# =============================================================================
+
+name: 更新规则文件
+
+on:
+  # 每天北京时间凌晨4点（UTC 20:00）自动触发
+  schedule:
+    - cron: '0 20 * * *'
+
+  # 允许手动触发
+  workflow_dispatch:
+    inputs:
+      force_update:
+        description: '强制更新（忽略MD5检查）'
+        required: false
+        default: 'false'
+        type: boolean
+
+# 设置工作流权限
+permissions:
+  contents: write  # 允许写入仓库内容（用于提交更改）
+  # 个人项目直接推送到主分支，无需PR
+
+jobs:
+  update-rules:
+    runs-on: ubuntu-latest
+
+    env:
+      PYTHON_VERSION: '3.9'
+      SCRIPTS_DIR: scripts
+      OUTPUT_DIR: scripts  # 输出到scripts目录
+
+    steps:
+      # 检出代码
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 获取完整历史，用于计算MD5
+
+      # 设置Python环境
+      - name: 设置Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      # 缓存pip依赖
+      - name: 缓存pip依赖
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt', 'scripts/merge_rules.py') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      # 安装依赖
+      - name: 安装Python依赖
+        run: |
+          python -m pip install --upgrade pip
+          pip install PyYAML requests
+
+      # 下载远程规则并计算MD5
+      - name: 生成规则文件
+        id: generate
+        run: |
+          echo "🕐 开始生成规则文件..."
+          cd scripts
+
+          # 动态获取输出文件列表
+          OUTPUT_FILES=$(python3 -c "
+          import yaml
+          with open('config.yaml', 'r') as f:
+              config = yaml.safe_load(f)
+              files = [group.get('output', '') for group in config.get('rule_groups', [])]
+              print(' '.join(files))
+          ")
+          echo "输出文件列表: $OUTPUT_FILES"
+
+          # 运行脚本生成规则（添加错误处理）
+          if ! python merge_rules.py --config config.yaml; then
+            echo "❌ 脚本执行失败"
+            exit 1
+          fi
+
+          # 检查文件是否存在
+          for file in $OUTPUT_FILES; do
+            if [ ! -f "$file" ]; then
+              echo "❌ 文件 $file 未生成"
+              exit 1
+            fi
+          done
+
+          # 计算新生成文件的MD5值
+          echo "📊 计算MD5值..."
+          MD5_SUM=""
+          for file in $OUTPUT_FILES; do
+            if [ -f "$file" ]; then
+              MD5=$(md5sum "$file" | awk '{print $1}')
+              MD5_SUM="${MD5_SUM}${file}:${MD5} "
+              echo "   $file: $MD5"
+            fi
+          done
+
+          # 保存到GitHub环境变量
+          echo "md5_summary=$MD5_SUM" >> $GITHUB_OUTPUT
+
+          echo "✅ MD5计算完成"
+
+      # 获取上次提交的MD5值
+      - name: 获取上次提交的MD5值
+        id: previous
+        run: |
+          # 获取上次提交中对应的文件
+          PREV_COMMIT=$(git rev-parse HEAD~1 2>/dev/null || echo "HEAD~1 does not exist")
+
+          echo "📖 上次提交: $PREV_COMMIT"
+
+          # 动态获取输出文件列表
+          OUTPUT_FILES=$(python3 -c "
+          import yaml
+          with open('scripts/config.yaml', 'r') as f:
+              config = yaml.safe_load(f)
+              files = [group.get('output', '') for group in config.get('rule_groups', [])]
+              print(' '.join(files))
+          ")
+
+          # 提取文件名（去掉路径）
+          BASENAME_FILES=$(echo $OUTPUT_FILES | sed 's|../rules/||g')
+
+          # 计算上次提交的MD5摘要
+          PREV_MD5_SUM=""
+          for file in $OUTPUT_FILES; do
+            # 提取文件名前缀
+            filename=$(basename "$file")
+            if git show $PREV_COMMIT:rules/$filename > /tmp/prev_$filename 2>/dev/null; then
+              PREV_MD5=$(md5sum /tmp/prev_$filename | awk '{print $1}')
+              PREV_MD5_SUM="${PREV_MD5_SUM}${file}:${PREV_MD5} "
+              echo "上次 $filename MD5: $PREV_MD5"
+            else
+              echo "⚠️  未找到上次提交的 $filename 文件"
+            fi
+          done
+
+          echo "prev_md5_summary=$PREV_MD5_SUM" >> $GITHUB_OUTPUT
+
+      # 比较MD5并决定是否需要提交
+      - name: 检查MD5变化
+        id: check
+        run: |
+          NEW_MD5="${{ steps.generate.outputs.md5_summary }}"
+          PREV_MD5="${{ steps.previous.outputs.prev_md5_summary }}"
+
+          echo "新MD5摘要: $NEW_MD5"
+          echo "上次MD5摘要: $PREV_MD5"
+
+          # 检查是否有变化
+          CHANGED=0
+
+          if [ "$NEW_MD5" != "$PREV_MD5" ]; then
+            echo "🔄 检测到文件发生变化"
+            CHANGED=1
+          else
+            echo "✅ 所有文件MD5未变化，无需更新"
+          fi
+
+          # 如果是强制更新模式
+          FORCE_UPDATE="${{ github.event.inputs.force_update }}"
+          if [ "$FORCE_UPDATE" = "true" ]; then
+            echo "⚡ 强制更新模式启用"
+            CHANGED=1
+          fi
+
+          # 输出结果
+          echo "changed=$CHANGED" >> $GITHUB_OUTPUT
+
+          if [ $CHANGED -eq 0 ]; then
+            echo "✅ 无需更新"
+          else
+            echo "📝 准备提交"
+          fi
+
+      # 配置Git（仅在需要提交时）
+      - name: 配置Git
+        if: steps.check.outputs.changed == '1'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      # 提交并推送更改
+      - name: 提交更改
+        if: steps.check.outputs.changed == '1'
+        run: |
+          cd scripts
+
+          # 添加所有更改
+          git add .
+
+          # 检查是否有更改需要提交
+          if git diff --staged --quiet; then
+            echo "没有需要提交的更改"
+            exit 0
+          fi
+
+          # 提交更改
+          TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+          MD5_SUMMARY="${{ steps.generate.outputs.md5_summary }}"
+
+          git commit -m "🤖 自动更新规则文件 - $TIMESTAMP
+
+          更新详情: $MD5_SUMMARY
+
+          [skip ci]" || echo "没有更改需要提交"
+
+      # 推送到仓库
+      - name: 推送到主分支
+        if: steps.check.outputs.changed == '1'
+        run: |
+          git push origin main
+
+      # 总结
+      - name: 总结
+        run: |
+          echo "=== 📊 更新完成 ==="
+          echo "时间: $(date '+%Y-%m-%d %H:%M:%S')"
+          echo "变更: ${{ steps.check.outputs.changed == '1' && '是' || '否' }}"
+          echo "分支: ${{ github.ref_name }}"
+          echo "提交: ${{ github.sha }}"

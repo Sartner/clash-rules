@@ -1,0 +1,108 @@
+# =============================================================================
+# Clash 规则合并器配置文件
+# =============================================================================
+# 使用方法:
+#   python merge_rules.py --config config.yaml
+#
+# 配置说明:
+# - global: 全局配置选项
+# - rule_groups: 规则组配置列表，每个组会输出一个文件
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# 全局配置
+# -----------------------------------------------------------------------------
+global:
+  # 去重策略:
+  #   - "group": 组内去重（每组内去重，不同组间可能有重复，默认）
+  #   - "all": 全局去重（所有组合并后统一去重）
+  #   - "none": 不去重
+  deduplication: "group"
+
+  # 下载失败时是否跳过该源
+  skip_on_error: true
+
+  # 下载重试次数
+  retries: 3
+
+  # 下载超时时间（秒）
+  timeout: 60
+
+  # 并发下载数量（建议不超过5）
+  max_concurrent: 3
+
+# -----------------------------------------------------------------------------
+# 规则组配置
+# -----------------------------------------------------------------------------
+# 每个规则组会输出一个独立的配置文件
+rule_groups:
+  # -------------------------------------------------------------------------
+  # 规则组1: AI服务规则
+  # -------------------------------------------------------------------------
+  - name: "ai-rules"
+    description: "AI服务规则集合"
+    output: "../rules/sartner-ai.yaml"
+
+    # 可选: 自定义头部注释
+    header:
+      - "# NAME: AI服务规则 (合并版)"
+      - "# DESCRIPTION: 包含OpenAI、Gemini等AI服务的规则"
+
+    # 规则源列表
+    sources:
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/OpenAI/OpenAI.yaml"
+        name: "OpenAI"
+
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Gemini/Gemini.yaml"
+        name: "Gemini"
+
+  # -------------------------------------------------------------------------
+  # 规则组2: 社交媒体规则
+  # -------------------------------------------------------------------------
+  - name: "social-rules"
+    description: "社交媒体规则集合"
+    output: "../rules/sartner-social.yaml"
+
+    header:
+      - "# NAME: 社交媒体规则 (合并版)"
+      - "# DESCRIPTION: 包含Twitter、Facebook等社交媒体规则"
+
+    sources:
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Twitter/Twitter.yaml"
+        name: "Twitter"
+
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Facebook/Facebook.yaml"
+        name: "Facebook"
+
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Instagram/Instagram.yaml"
+        name: "Instagram"
+
+  # -------------------------------------------------------------------------
+  # 规则组3: 流媒体规则
+  # -------------------------------------------------------------------------
+  - name: "streaming-rules"
+    description: "流媒体服务规则"
+    output: "../rules/sartner-stream.yaml"
+
+    header:
+      - "# NAME: 流媒体规则 (合并版)"
+      - "# DESCRIPTION: 包含Netflix、YouTube、Disney+、HBO、Spotify、twitch等流媒体规则"
+
+    sources:
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Netflix/Netflix.yaml"
+        name: "Netflix"
+
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/YouTube/YouTube.yaml"
+        name: "YouTube"
+
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Disney/Disney.yaml"
+        name: "Disney+"
+
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/HBO/HBO.yaml"
+        name: "HBO Max"
+
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Spotify/Spotify.yaml"
+        name: "Spotify"
+
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Twitch/Twitch.yaml"
+        name: "Twitch"
