@@ -168,17 +168,10 @@ jobs:
           echo "新MD5摘要: $NEW_MD5"
           echo "上次MD5摘要: $PREV_MD5"
 
-          # 对MD5摘要进行排序，确保比较不受文件顺序影响
-          NEW_MD5_SORTED=$(echo "$NEW_MD5" | tr ' ' '\n' | grep -v '^$' | sort | tr '\n' ' ')
-          PREV_MD5_SORTED=$(echo "$PREV_MD5" | tr ' ' '\n' | grep -v '^$' | sort | tr '\n' ' ')
-
-          echo "排序后新MD5: $NEW_MD5_SORTED"
-          echo "排序后上次MD5: $PREV_MD5_SORTED"
-
           # 检查是否有变化
           CHANGED=0
 
-          if [ "$NEW_MD5_SORTED" != "$PREV_MD5_SORTED" ]; then
+          if [ "$NEW_MD5" != "$PREV_MD5" ]; then
             echo "🔄 检测到文件发生变化"
             CHANGED=1
           else
