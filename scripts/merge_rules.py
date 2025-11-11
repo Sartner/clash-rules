@@ -212,6 +212,8 @@ class RuleGroup:
         self.custom_header = config.get('header', [])
         self.deduplication = config.get('deduplication', global_config.get('deduplication', 'group'))
         self.strict_validation = global_config.get('strict_validation', False)
+        # 过滤配置（可选）
+        self.filters = config.get('filters', {})
         self.sources = [
             RuleSource(
                 source['url'],
@@ -259,6 +261,21 @@ class RuleGroup:
 
         # 合并和去重
         merged_data, dedup_stats = self._merge_and_deduplicate(all_payloads)
+
+        # 应用过滤（如果配置了）
+        if self.filters:
+            original_len = len(merged_data.get('payload', []))
+            filtered_payload, removed_count = self._apply_filters(merged_data.get('payload', []))
+            merged_data['payload'] = filtered_payload
+            # 更新统计信息
+            self.stats['removed_count'] += removed_count
+            self.stats['deduplicated_rules'] = len(filtered_payload)
+            # 更新去重统计用于头部显示
+            dedup_stats = {
+                'total': dedup_stats.get('total', original_len),
+                'deduplicated': len(filtered_payload),
+                'removed': dedup_stats.get('total', original_len) - len(filtered_payload)
+            }
 
         # 计算Payload的MD5值
         payload_md5 = self._calculate_payload_md5(merged_data['payload'])
@@ -439,6 +456,61 @@ class RuleGroup:
             return True
         except Exception:
             return False
+
+    def _apply_filters(self, rules: List) -> Tuple[List, int]:
+        """
+        根据配置过滤规则
+        支持：
+          - exclude_exact: 精确匹配字符串（如 "DOMAIN,www.bing.com"）
+          - exclude_domain_suffixes: 域名后缀（如 "segment.io"）
+          - exclude_keywords: 关键字匹配（在整条规则字符串中查找）
+        返回：过滤后的规则列表及移除数量
+        """
+        exclude_exact = set(self.filters.get('exclude_exact', []) or [])
+        exclude_suffixes = set(self.filters.get('exclude_domain_suffixes', []) or [])
+        exclude_keywords = set(self.filters.get('exclude_keywords', []) or [])
+
+        filtered = []
+        removed = 0
+
+        for rule in rules:
+            try:
+                rule_str = str(rule).strip()
+                if not rule_str:
+                    continue
+
+                # 精确匹配
+                if rule_str in exclude_exact:
+                    removed += 1
+                    continue
+
+                tokens = [t.strip() for t in rule_str.split(',') if t.strip()]
+                key = tokens[0].upper() if tokens else ''
+                value = tokens[1] if len(tokens) > 1 else ''
+
+                # 域名后缀过滤（对 DOMAIN/DOMAIN-SUFFIX 生效）
+                if key in {'DOMAIN', 'DOMAIN-SUFFIX'} and value:
+                    # 直接等于或以 .suffix 结尾
+                    for suf in exclude_suffixes:
+                        if value == suf or value.endswith('.' + suf):
+                            removed += 1
+                            value = None
+                            break
+                    if value is None:
+                        continue
+
+                # 关键字过滤（匹配整条规则字符串）
+                if exclude_keywords:
+                    if any(kw.lower() in rule_str.lower() for kw in exclude_keywords):
+                        removed += 1
+                        continue
+
+                filtered.append(rule)
+            except Exception:
+                # 出现异常则保留该规则，避免误删
+                filtered.append(rule)
+
+        return filtered, removed
 
     def _generate_header(self, dedup_stats: Dict, payload_md5: str = "") -> str:
         """生成输出文件头部"""

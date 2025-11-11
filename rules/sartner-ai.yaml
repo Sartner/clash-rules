@@ -1,33 +1,31 @@
 # NAME: AI服务规则 (合并版)
 # DESCRIPTION: 包含OpenAI、Gemini等AI服务的规则
-# UPDATED: 2025-11-11 08:29:59
-# MD5 (Payload): 810c3ffc8a4a637b52ad05142a3d8761
+# UPDATED: 2025-11-11 18:59:58
+# MD5 (Payload): 6f1ef1d30ab63e10effc22491c8e9086
 
 # SOURCES:
 #   - OpenAI: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/OpenAI/OpenAI.yaml
 #   - Gemini: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Gemini/Gemini.yaml
+#   - Claude: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Claude/Claude.yaml
+#   - Copilot: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Copilot/Copilot.yaml
 
 # STATS:
-#   Total Sources: 2
-#   Successful: 2
+#   Total Sources: 4
+#   Successful: 4
 #   Failed: 0
-#   Total Rules: 48
-#   Deduplicated: 48
-#   Removed: 0
+#   Total Rules: 102
+#   Deduplicated: 57
+#   Removed: 45
 
 ---
 payload:
-- DOMAIN,browser-intake-datadoghq.com
 - DOMAIN,chat.openai.com.cdn.cloudflare.net
 - DOMAIN,openai-api.arkoselabs.com
 - DOMAIN,openaicom-api-bdcpf8c6d2e9atf6.z01.azurefd.net
 - DOMAIN,openaicomproductionae4b.blob.core.windows.net
 - DOMAIN,production-openaicom-storage.azureedge.net
-- DOMAIN,static.cloudflareinsights.com
 - DOMAIN-SUFFIX,ai.com
-- DOMAIN-SUFFIX,algolia.net
 - DOMAIN-SUFFIX,api.statsig.com
-- DOMAIN-SUFFIX,auth0.com
 - DOMAIN-SUFFIX,chatgpt.com
 - DOMAIN-SUFFIX,chatgpt.livekit.cloud
 - DOMAIN-SUFFIX,client-api.arkoselabs.com
@@ -35,18 +33,11 @@ payload:
 - DOMAIN-SUFFIX,featuregates.org
 - DOMAIN-SUFFIX,host.livekit.cloud
 - DOMAIN-SUFFIX,identrust.com
-- DOMAIN-SUFFIX,intercom.io
-- DOMAIN-SUFFIX,intercomcdn.com
-- DOMAIN-SUFFIX,launchdarkly.com
 - DOMAIN-SUFFIX,oaistatic.com
 - DOMAIN-SUFFIX,oaiusercontent.com
-- DOMAIN-SUFFIX,observeit.net
 - DOMAIN-SUFFIX,openai.com
 - DOMAIN-SUFFIX,openaiapi-site.azureedge.net
 - DOMAIN-SUFFIX,openaicom.imgix.net
-- DOMAIN-SUFFIX,segment.io
-- DOMAIN-SUFFIX,sentry.io
-- DOMAIN-SUFFIX,stripe.com
 - DOMAIN-SUFFIX,turn.livekit.cloud
 - DOMAIN-KEYWORD,openai
 - IP-CIDR,24.199.123.28/32
@@ -65,5 +56,23 @@ payload:
 - DOMAIN-KEYWORD,colab
 - DOMAIN-KEYWORD,developerprofiles
 - DOMAIN-KEYWORD,generativelanguage
-
-version: 1
+- DOMAIN-SUFFIX,anthropic.com
+- DOMAIN-SUFFIX,claude.ai
+- DOMAIN,api.msn.com
+- DOMAIN,api.statsig.com
+- DOMAIN,assets.msn.com
+- DOMAIN,copilot.microsoft.com
+- DOMAIN,gateway.bingviz.microsoft.net
+- DOMAIN,gateway.bingviz.microsoftapp.net
+- DOMAIN,in.appcenter.ms
+- DOMAIN,location.microsoft.com
+- DOMAIN,odc.officeapps.live.com
+- DOMAIN,self.events.data.microsoft.com
+- DOMAIN,services.bingapis.com
+- DOMAIN,sydney.bing.com
+- DOMAIN-SUFFIX,api.microsoftapp.net
+- DOMAIN-SUFFIX,bing-shopping.microsoft-falcon.io
+- DOMAIN-SUFFIX,challenges.cloudflare.com
+- DOMAIN-SUFFIX,edgeservices.bing.com
+- DOMAIN-KEYWORD,openaicom-api
+- IP-ASN,14061

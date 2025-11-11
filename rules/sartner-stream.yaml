@@ -1,7 +1,7 @@
 # NAME: 流媒体规则 (合并版)
-# DESCRIPTION: 包含Netflix、YouTube、Disney+、HBO、Spotify、twitch等流媒体规则
-# UPDATED: 2025-11-11 08:30:00
-# MD5 (Payload): b9c783f18a148a0fa6fb05d1c2212941
+# DESCRIPTION: 包含Netflix、YouTube、Disney+、HBO、Spotify、Twitch、Prime Video、Apple TV、Paramount+、Peacock、Discovery+、Hulu等流媒体规则
+# UPDATED: 2025-11-11 19:00:05
+# MD5 (Payload): 2b5fad7703de9e9a2be691124189506b
 
 # SOURCES:
 #   - Netflix: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Netflix/Netflix.yaml
@@ -10,13 +10,19 @@
 #   - HBO Max: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/HBO/HBO.yaml
 #   - Spotify: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Spotify/Spotify.yaml
 #   - Twitch: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Twitch/Twitch.yaml
+#   - Prime Video: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/PrimeVideo/PrimeVideo.yaml
+#   - Apple TV: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/AppleTV/AppleTV.yaml
+#   - Paramount+: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ParamountPlus/ParamountPlus.yaml
+#   - Peacock: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Peacock/Peacock.yaml
+#   - Discovery+: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/DiscoveryPlus/DiscoveryPlus.yaml
+#   - Hulu: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Hulu/Hulu.yaml
 
 # STATS:
-#   Total Sources: 6
-#   Successful: 6
+#   Total Sources: 12
+#   Successful: 12
 #   Failed: 0
-#   Total Rules: 495
-#   Deduplicated: 494
+#   Total Rules: 603
+#   Deduplicated: 602
 #   Removed: 1
 
 ---
@@ -515,5 +521,111 @@ payload:
 - IP-CIDR,99.181.64.0/18
 - IP-CIDR6,2402:2a80::/32
 - PROCESS-NAME,tv.twitch.android.app
-
-version: 1
+- DOMAIN,atv-ps.amazon.com
+- DOMAIN,avodmp4s3ww-a.akamaihd.net
+- DOMAIN,d1v5ir2lpwr8os.cloudfront.net
+- DOMAIN,d22qjgkvxw22r6.cloudfront.net
+- DOMAIN,d25xi40x97liuc.cloudfront.net
+- DOMAIN,d27xxe7juh1us6.cloudfront.net
+- DOMAIN,dmqdd6hw24ucf.cloudfront.net
+- DOMAIN,fls-na.amazon.com
+- DOMAIN,www.amazon.com
+- DOMAIN-SUFFIX,aiv-cdn.net
+- DOMAIN-SUFFIX,aiv-delivery.net
+- DOMAIN-SUFFIX,amazonvideo.com
+- DOMAIN-SUFFIX,media-amazon.com
+- DOMAIN-SUFFIX,primevideo.com
+- DOMAIN-SUFFIX,pv-cdn.net
+- DOMAIN-KEYWORD,avoddashs
+- DOMAIN,hls-amt.itunes.apple.com
+- DOMAIN,hls.itunes.apple.com
+- DOMAIN,np-edge.itunes.apple.com
+- DOMAIN,play-edge.itunes.apple.com
+- DOMAIN,tv.applemusic.com
+- DOMAIN,uts-api.itunes.apple.com
+- DOMAIN-SUFFIX,tv.apple.com
+- PROCESS-NAME,TV
+- DOMAIN,cbsi.live.ott.irdeto.com
+- DOMAIN,cbsplaylistserver.aws.syncbak.com
+- DOMAIN,cbsservice.aws.syncbak.com
+- DOMAIN,link.theplatform.com
+- DOMAIN-SUFFIX,cbsaavideo.com
+- DOMAIN-SUFFIX,cbsi.com
+- DOMAIN-SUFFIX,cbsivideo.com
+- DOMAIN-SUFFIX,paramountplus.com
+- DOMAIN-SUFFIX,pplusstatic.com
+- DOMAIN-SUFFIX,peacocktv.com
+- DOMAIN,discovery-us.conax.cloud
+- DOMAIN,dplus-northamerica-cloudfront-gcs.prod-vod.h264.io
+- DOMAIN,dplus-northamerica.media-edge.prod-vod.h264.io
+- DOMAIN-SUFFIX,disco-api.com
+- DOMAIN-SUFFIX,discovery.com
+- DOMAIN-SUFFIX,discoveryplus.co.uk
+- DOMAIN-SUFFIX,discoveryplus.com
+- DOMAIN-SUFFIX,discoveryplus.in
+- DOMAIN-SUFFIX,dnitv.com
+- DOMAIN-SUFFIX,fwmrm.net
+- DOMAIN-SUFFIX,getblueshift.com
+- DOMAIN-SUFFIX,litix.io
+- DOMAIN-SUFFIX,mobile-collector.newrelic.com
+- DOMAIN-SUFFIX,uplynk.com
+- DOMAIN-KEYWORD,discovery.uplynk.com
+- DOMAIN,live-mediashield-ava-hulustream-com.akamaized.net
+- DOMAIN-SUFFIX,112263.com
+- DOMAIN-SUFFIX,assetshuluimcom-a.akamaihd.net
+- DOMAIN-SUFFIX,callhulu.com
+- DOMAIN-SUFFIX,cws-hulu.conviva.com
+- DOMAIN-SUFFIX,findyourlimits.com
+- DOMAIN-SUFFIX,freehulu.com
+- DOMAIN-SUFFIX,happyon.jp
+- DOMAIN-SUFFIX,hjholdings.jp
+- DOMAIN-SUFFIX,hooloo.tv
+- DOMAIN-SUFFIX,hoolu.com
+- DOMAIN-SUFFIX,hoolu.tv
+- DOMAIN-SUFFIX,hu1u.com
+- DOMAIN-SUFFIX,huloo.cc
+- DOMAIN-SUFFIX,huloo.tv
+- DOMAIN-SUFFIX,hulu.com
+- DOMAIN-SUFFIX,hulu.hb.omtrdc.net
+- DOMAIN-SUFFIX,hulu.jp
+- DOMAIN-SUFFIX,hulu.playback.edge.bamgrid.com
+- DOMAIN-SUFFIX,hulu.sc.omtrdc.net
+- DOMAIN-SUFFIX,hulu.tv
+- DOMAIN-SUFFIX,hulu.us
+- DOMAIN-SUFFIX,huluaction.com
+- DOMAIN-SUFFIX,huluad.com
+- DOMAIN-SUFFIX,huluapp.com
+- DOMAIN-SUFFIX,huluasks.com
+- DOMAIN-SUFFIX,hulucall.com
+- DOMAIN-SUFFIX,hulufree.com
+- DOMAIN-SUFFIX,hulugans.com
+- DOMAIN-SUFFIX,hulugermany.com
+- DOMAIN-SUFFIX,hulugo.com
+- DOMAIN-SUFFIX,huluim.com
+- DOMAIN-SUFFIX,huluinstantmessenger.com
+- DOMAIN-SUFFIX,huluitaly.com
+- DOMAIN-SUFFIX,hulunet.com
+- DOMAIN-SUFFIX,hulunetwork.com
+- DOMAIN-SUFFIX,huluplus.com
+- DOMAIN-SUFFIX,hulupremium.com
+- DOMAIN-SUFFIX,hulupurchase.com
+- DOMAIN-SUFFIX,huluqa.com
+- DOMAIN-SUFFIX,hulurussia.com
+- DOMAIN-SUFFIX,huluspain.com
+- DOMAIN-SUFFIX,hulusports.com
+- DOMAIN-SUFFIX,hulustream.com
+- DOMAIN-SUFFIX,huluteam.com
+- DOMAIN-SUFFIX,hulutv.com
+- DOMAIN-SUFFIX,huluusa.com
+- DOMAIN-SUFFIX,joinmaidez.com
+- DOMAIN-SUFFIX,mushymush.tv
+- DOMAIN-SUFFIX,myhulu.com
+- DOMAIN-SUFFIX,originalhulu.com
+- DOMAIN-SUFFIX,payhulu.com
+- DOMAIN-SUFFIX,prod.hjholdings.tv
+- DOMAIN-SUFFIX,registerhulu.com
+- DOMAIN-SUFFIX,streaks.jp
+- DOMAIN-SUFFIX,thehulubraintrust.com
+- DOMAIN-SUFFIX,wwwhuluplus.com
+- DOMAIN-SUFFIX,yb.uncn.jp
+- PROCESS-NAME,com.hulu.plus

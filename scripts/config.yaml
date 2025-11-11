@@ -56,6 +56,31 @@ rule_groups:
       - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Gemini/Gemini.yaml"
         name: "Gemini"
 
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Claude/Claude.yaml"
+        name: "Claude"
+
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Copilot/Copilot.yaml"
+        name: "Copilot"
+
+    # 过滤：移除通用/非AI域，保持更纯净集合
+    filters:
+      exclude_exact:
+        - "DOMAIN,www.bing.com"
+        - "DOMAIN,r.bing.com"
+        - "DOMAIN,cdn.usefathom.com"
+        - "DOMAIN,browser-intake-datadoghq.com"
+        - "DOMAIN,static.cloudflareinsights.com"
+      exclude_domain_suffixes:
+        - "segment.io"
+        - "sentry.io"
+        - "stripe.com"
+        - "intercom.io"
+        - "intercomcdn.com"
+        - "launchdarkly.com"
+        - "algolia.net"
+        - "auth0.com"
+        - "observeit.net"
+
   # -------------------------------------------------------------------------
   # 规则组2: 社交媒体规则
   # -------------------------------------------------------------------------
@@ -86,7 +111,7 @@ rule_groups:
 
     header:
       - "# NAME: 流媒体规则 (合并版)"
-      - "# DESCRIPTION: 包含Netflix、YouTube、Disney+、HBO、Spotify、twitch等流媒体规则"
+      - "# DESCRIPTION: 包含Netflix、YouTube、Disney+、HBO、Spotify、Twitch、Prime Video、Apple TV、Paramount+、Peacock、Discovery+、Hulu等流媒体规则"
 
     sources:
       - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Netflix/Netflix.yaml"
@@ -106,3 +131,21 @@ rule_groups:
 
       - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Twitch/Twitch.yaml"
         name: "Twitch"
+
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/PrimeVideo/PrimeVideo.yaml"
+        name: "Prime Video"
+
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/AppleTV/AppleTV.yaml"
+        name: "Apple TV"
+
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ParamountPlus/ParamountPlus.yaml"
+        name: "Paramount+"
+
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Peacock/Peacock.yaml"
+        name: "Peacock"
+
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/DiscoveryPlus/DiscoveryPlus.yaml"
+        name: "Discovery+"
+
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Hulu/Hulu.yaml"
+        name: "Hulu"
