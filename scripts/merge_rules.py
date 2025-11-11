@@ -211,6 +211,7 @@ class RuleGroup:
         self.output_dir = global_config.get('output_dir', '')
         self.custom_header = config.get('header', [])
         self.deduplication = config.get('deduplication', global_config.get('deduplication', 'group'))
+        self.strict_validation = global_config.get('strict_validation', False)
         self.sources = [
             RuleSource(
                 source['url'],
@@ -283,21 +284,33 @@ class RuleGroup:
         if self.deduplication == 'none':
             # 不去重
             all_rules = []
+            total = 0
+            kept = 0
             for source, payload in sources_data:
+                valid_rules = []
+                for rule in payload:
+                    total += 1
+                    rule_str = str(rule).strip()
+                    if not rule_str:
+                        continue
+                    if self.strict_validation and not self._is_rule_valid(rule_str):
+                        print(f"  ⚠️  跳过无效规则: {rule_str}")
+                        continue
+                    valid_rules.append(rule)
+                kept += len(valid_rules)
                 all_rules.append({
                     'name': source.name,
-                    'rules': payload
+                    'rules': valid_rules
                 })
 
-            total = sum(len(payload) for _, payload in sources_data)
             self.stats['total_rules'] = total
-            self.stats['deduplicated_rules'] = total
-            self.stats['removed_count'] = 0
+            self.stats['deduplicated_rules'] = kept
+            self.stats['removed_count'] = total - kept
 
             return {
                 "payload": all_rules,
                 "version": 1
-            }, {'total': total, 'deduplicated': total, 'removed': 0}
+            }, {'total': total, 'deduplicated': kept, 'removed': total - kept}
 
         elif self.deduplication == 'group':
             # 组内去重
@@ -311,7 +324,12 @@ class RuleGroup:
                 for rule in payload:
                     total += 1
                     rule_str = str(rule).strip()
-                    if rule_str and rule_str not in seen:
+                    if not rule_str:
+                        continue
+                    if self.strict_validation and not self._is_rule_valid(rule_str):
+                        print(f"  ⚠️  跳过无效规则: {rule_str}")
+                        continue
+                    if rule_str not in seen:
                         seen.add(rule_str)
                         unique_rules.append(rule)
 
@@ -325,12 +343,102 @@ class RuleGroup:
             }, {'total': total, 'deduplicated': len(unique_rules), 'removed': total - len(unique_rules)}
 
         elif self.deduplication == 'all':
-            # 全局去重（扩展用，当前等价于组内）
-            return self._merge_and_deduplicate(sources_data)
+            # 全局去重（对本组所有源统一去重）
+            print("\n  🔄 执行全局去重...")
+
+            seen = set()
+            unique_rules = []
+            total = 0
+
+            for source, payload in sources_data:
+                for rule in payload:
+                    total += 1
+                    rule_str = str(rule).strip()
+                    if not rule_str:
+                        continue
+                    if self.strict_validation and not self._is_rule_valid(rule_str):
+                        print(f"  ⚠️  跳过无效规则: {rule_str}")
+                        continue
+                    if rule_str not in seen:
+                        seen.add(rule_str)
+                        unique_rules.append(rule)
+
+            self.stats['total_rules'] = total
+            self.stats['deduplicated_rules'] = len(unique_rules)
+            self.stats['removed_count'] = total - len(unique_rules)
+
+            return {
+                "payload": unique_rules,
+                "version": 1
+            }, {'total': total, 'deduplicated': len(unique_rules), 'removed': total - len(unique_rules)}
 
         else:
-            print(f"  ⚠️  未知去重策略: {self.deduplication}，使用组内去重")
-            return self._merge_and_deduplicate(sources_data)
+            print(f"  ⚠️  未知去重策略: {self.deduplication}，按组内去重处理")
+            seen = set()
+            unique_rules = []
+            total = 0
+            for source, payload in sources_data:
+                for rule in payload:
+                    total += 1
+                    rule_str = str(rule).strip()
+                    if not rule_str:
+                        continue
+                    if self.strict_validation and not self._is_rule_valid(rule_str):
+                        print(f"  ⚠️  跳过无效规则: {rule_str}")
+                        continue
+                    if rule_str not in seen:
+                        seen.add(rule_str)
+                        unique_rules.append(rule)
+            self.stats['total_rules'] = total
+            self.stats['deduplicated_rules'] = len(unique_rules)
+            self.stats['removed_count'] = total - len(unique_rules)
+            return {
+                "payload": unique_rules,
+                "version": 1
+            }, {'total': total, 'deduplicated': len(unique_rules), 'removed': total - len(unique_rules)}
+
+    def _is_rule_valid(self, rule_str: str) -> bool:
+        """基本规则校验：校验 Classical 规则格式"""
+        try:
+            tokens = [t.strip() for t in rule_str.split(',') if t.strip()]
+            if not tokens:
+                return False
+            key = tokens[0].upper()
+            valid_keys = {
+                'DOMAIN', 'DOMAIN-SUFFIX', 'DOMAIN-KEYWORD', 'DOMAIN-REGEX',
+                'IP-CIDR', 'IP-CIDR6', 'SRC-IP-CIDR', 'SRC-IP-CIDR6',
+                'GEOIP', 'IP-ASN', 'PROCESS-NAME', 'USER-AGENT',
+                'NETWORK', 'SRC-PORT', 'DST-PORT', 'MATCH'
+            }
+            if key not in valid_keys:
+                return False
+            if key == 'MATCH':
+                return len(tokens) == 1
+            # 至少需要一个参数
+            if len(tokens) < 2:
+                return False
+            value = tokens[1]
+            if key in {'DOMAIN', 'DOMAIN-SUFFIX', 'DOMAIN-KEYWORD', 'USER-AGENT', 'PROCESS-NAME', 'DOMAIN-REGEX'}:
+                return len(value) > 0
+            if key in {'IP-CIDR', 'SRC-IP-CIDR'}:
+                return ('/' in value) and ('.' in value)
+            if key in {'IP-CIDR6', 'SRC-IP-CIDR6'}:
+                return ('/' in value) and (':' in value)
+            if key == 'GEOIP':
+                return value.isalpha() and value.upper() == value and 1 < len(value) <= 6
+            if key == 'IP-ASN':
+                return value.isdigit()
+            if key == 'NETWORK':
+                return value.lower() in {'tcp', 'udp'}
+            if key in {'SRC-PORT', 'DST-PORT'}:
+                # 端口或端口范围
+                if '-' in value:
+                    a, _, b = value.partition('-')
+                    return a.isdigit() and b.isdigit()
+                return value.isdigit()
+            return True
+        except Exception:
+            return False
 
     def _generate_header(self, dedup_stats: Dict, payload_md5: str = "") -> str:
         """生成输出文件头部"""
@@ -428,22 +536,32 @@ class RuleGroup:
             with open(output_path, 'w', encoding='utf-8') as f:
                 # 写入头部
                 f.write(header)
-
-                # 检查数据格式
-                if data['payload'] and isinstance(data['payload'][0], dict) and 'name' in data['payload'][0]:
-                    # 格式1: 分组格式
-                    for group in data['payload']:
-                        f.write(f"\n# === {group['name']} ===\n")
-                        for rule in group['rules']:
-                            f.write(f"- {rule}\n")
+                # 统一写入 payload 列表
+                if not data['payload']:
+                    f.write("payload: []\n")
                 else:
-                    # 格式2: 平面格式
                     f.write("payload:\n")
-                    for rule in data['payload']:
-                        f.write(f"- {rule}\n")
+                    # 检查数据格式
+                    if isinstance(data['payload'][0], dict) and 'name' in data['payload'][0]:
+                        # 分组格式：保留分组注释，写入规则项
+                        for group in data['payload']:
+                            f.write(f"\n# === {group['name']} ===\n")
+                            for rule in group['rules']:
+                                f.write(f"- {rule}\n")
+                    else:
+                        # 平面格式：直接写入规则项
+                        for rule in data['payload']:
+                            f.write(f"- {rule}\n")
 
-                # 版本信息
-                f.write(f"\nversion: {data['version']}\n")
+            # 保存后进行结构校验，确保为有效的规则集
+            try:
+                with open(output_path, 'r', encoding='utf-8') as vf:
+                    parsed = yaml.safe_load(vf)
+                if not isinstance(parsed, dict) or not isinstance(parsed.get('payload'), list):
+                    raise ValueError("生成文件缺少有效的 payload 列表")
+            except Exception as ve:
+                print(f"  ❌ 验证失败: {ve}")
+                return False
 
             print(f"  ✅ 保存成功")
             return True
@@ -456,10 +574,12 @@ class RuleGroup:
 class RuleMerger:
     """规则合并器 - 主控制器"""
 
-    def __init__(self, config_path: Optional[str] = None, output_dir: str = ''):
+    def __init__(self, config_path: Optional[str] = None, output_dir: str = '', deduplication: Optional[str] = None, strict_validation: bool = False):
         self.config_path = config_path
         self.config_manager: Optional[ConfigManager] = None
         self.output_dir = output_dir
+        self.deduplication = deduplication
+        self.strict_validation = strict_validation
 
     async def process_all_groups(self):
         """处理所有规则组"""
@@ -476,6 +596,10 @@ class RuleMerger:
             global_config = self.config_manager.get_global_config()
             if self.output_dir:
                 global_config['output_dir'] = self.output_dir
+            if self.deduplication:
+                global_config['deduplication'] = self.deduplication
+            # 将严格校验传入全局配置
+            global_config['strict_validation'] = bool(self.strict_validation)
 
             rule_groups = self.config_manager.get_rule_groups()
 
@@ -553,7 +677,12 @@ class RuleMerger:
                 for rule in source.data['payload']:
                     total += 1
                     rule_str = str(rule).strip()
-                    if rule_str and rule_str not in seen:
+                    if not rule_str:
+                        continue
+                    if self.strict_validation and not self._is_rule_valid(rule_str):
+                        print(f"  ⚠️  跳过无效规则: {rule_str}")
+                        continue
+                    if rule_str not in seen:
                         seen.add(rule_str)
                         unique_rules.append(rule)
 
@@ -573,12 +702,18 @@ class RuleMerger:
         try:
             with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
                 f.write(header)
-                f.write("payload:\n")
+                if not unique_rules:
+                    f.write("payload: []\n")
+                else:
+                    f.write("payload:\n")
+                    for rule in unique_rules:
+                        f.write(f"- {rule}\n")
 
-                for rule in unique_rules:
-                    f.write(f"- {rule}\n")
-
-                f.write(f"\nversion: 1\n")
+            # 结构校验
+            with open(OUTPUT_FILE, 'r', encoding='utf-8') as vf:
+                parsed = yaml.safe_load(vf)
+            if not isinstance(parsed, dict) or not isinstance(parsed.get('payload'), list):
+                raise ValueError("生成文件缺少有效的 payload 列表")
 
             print(f"✅ 合并完成! 输出文件: {OUTPUT_FILE}")
             print(f"   规则总数: {len(unique_rules)}")
@@ -595,9 +730,10 @@ def create_quick_config(args) -> Optional[str]:
 
     config = {
         'global': {
-            'deduplication': 'group',
+            'deduplication': args.dedup if getattr(args, 'dedup', None) else 'group',
             'retries': 3,
-            'timeout': 60
+            'timeout': 60,
+            'strict_validation': bool(getattr(args, 'strict_validation', False))
         },
         'rule_groups': [{
             'name': 'quick-group',
@@ -674,6 +810,12 @@ def main():
         help='去重策略: group=组内, all=全局, none=不去重'
     )
 
+    parser.add_argument(
+        '--strict-validation',
+        action='store_true',
+        help='启用严格规则校验（无效规则将被跳过）'
+    )
+
     args = parser.parse_args()
 
     # 切换到脚本所在目录，确保路径正确解析
@@ -705,12 +847,10 @@ def main():
     print("🚀 Clash规则合并器")
     print("=" * 60)
 
-    merger = RuleMerger()
-
     # 处理配置
     if args.config:
         # 使用配置文件
-        merger = RuleMerger(config_path=args.config, output_dir=args.output_dir)
+        merger = RuleMerger(config_path=args.config, output_dir=args.output_dir, deduplication=args.dedup, strict_validation=args.strict_validation)
         import asyncio
         return asyncio.run(merger.process_all_groups())
 
@@ -718,7 +858,7 @@ def main():
         # 快速配置
         temp_config = create_quick_config(args)
         if temp_config:
-            merger = RuleMerger(config_path=temp_config, output_dir=args.output_dir)
+            merger = RuleMerger(config_path=temp_config, output_dir=args.output_dir, deduplication=args.dedup, strict_validation=args.strict_validation)
             import asyncio
             result = asyncio.run(merger.process_all_groups())
 
@@ -733,6 +873,7 @@ def main():
 
     else:
         # 兼容模式
+        merger = RuleMerger(strict_validation=args.strict_validation)
         return merger._run_compat_mode()
 
 

@@ -80,8 +80,8 @@ jobs:
           ")
           echo "输出文件列表: $OUTPUT_FILES"
 
-          # 运行脚本生成规则（添加错误处理）
-          if ! python merge_rules.py --config config.yaml; then
+          # 运行脚本生成规则（开启严格校验，添加错误处理）
+          if ! python merge_rules.py --config config.yaml --strict-validation; then
             echo "❌ 脚本执行失败"
             exit 1
           fi
