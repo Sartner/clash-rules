@@ -94,19 +94,26 @@ jobs:
             fi
           done
 
-          # 计算新生成文件的MD5值
-          echo "📊 计算MD5值..."
-          MD5_SUM=""
+          # 提取Payload MD5（如缺失则回退为文件MD5）
+          echo "📊 提取Payload MD5..."
+          PAYLOAD_MD5_SUM=""
           for file in $OUTPUT_FILES; do
             if [ -f "$file" ]; then
-              MD5=$(md5sum "$file" | awk '{print $1}')
-              MD5_SUM="${MD5_SUM}${file}:${MD5} "
-              echo "   $file: $MD5"
+              PMD5=$(sed -n 's/^# MD5 (Payload): //p' "$file" | head -n 1)
+              if [ -n "$PMD5" ]; then
+                PAYLOAD_MD5_SUM="${PAYLOAD_MD5_SUM}${file}:${PMD5} "
+                echo "   $file Payload MD5: $PMD5"
+              else
+                echo "   ⚠️ 未找到 Payload MD5，回退为文件MD5"
+                FILE_MD5=$(md5sum "$file" | awk '{print $1}')
+                PAYLOAD_MD5_SUM="${PAYLOAD_MD5_SUM}${file}:${FILE_MD5} "
+                echo "   $file File MD5: $FILE_MD5"
+              fi
             fi
           done
 
           # 保存到GitHub环境变量
-          echo "md5_summary=$MD5_SUM" >> $GITHUB_OUTPUT
+          echo "payload_md5_summary=$PAYLOAD_MD5_SUM" >> $GITHUB_OUTPUT
 
           echo "✅ MD5计算完成"
 
@@ -128,39 +135,50 @@ jobs:
               print(' '.join(files))
           ")
 
-          # 提取文件名（去掉路径）
-          BASENAME_FILES=$(echo $OUTPUT_FILES | sed 's|../rules/||g')
-
-          # 计算当前HEAD中的MD5摘要
-          PREV_MD5_SUM=""
+          # 计算当前HEAD中的Payload MD5摘要（如缺失则回退为文件MD5）
+          PREV_PAYLOAD_MD5_SUM=""
           for file in $OUTPUT_FILES; do
             # 提取文件名前缀
             filename=$(basename "$file")
             if git show $CURRENT_COMMIT:rules/$filename > /tmp/prev_$filename 2>/dev/null; then
-              PREV_MD5=$(md5sum /tmp/prev_$filename | awk '{print $1}')
-              PREV_MD5_SUM="${PREV_MD5_SUM}${file}:${PREV_MD5} "
-              echo "当前HEAD $filename MD5: $PREV_MD5"
+              PREV_PMD5=$(sed -n 's/^# MD5 (Payload): //p' /tmp/prev_$filename | head -n 1)
+              if [ -n "$PREV_PMD5" ]; then
+                PREV_PAYLOAD_MD5_SUM="${PREV_PAYLOAD_MD5_SUM}${file}:${PREV_PMD5} "
+                echo "当前HEAD $filename Payload MD5: $PREV_PMD5"
+              else
+                echo "⚠️  HEAD文件无Payload MD5，回退为文件MD5"
+                PREV_FILE_MD5=$(md5sum /tmp/prev_$filename | awk '{print $1}')
+                PREV_PAYLOAD_MD5_SUM="${PREV_PAYLOAD_MD5_SUM}${file}:${PREV_FILE_MD5} "
+                echo "当前HEAD $filename File MD5: $PREV_FILE_MD5"
+              fi
             else
               echo "⚠️  当前HEAD中未找到 $filename 文件"
             fi
           done
 
-          echo "prev_md5_summary=$PREV_MD5_SUM" >> $GITHUB_OUTPUT
+          echo "prev_payload_md5_summary=$PREV_PAYLOAD_MD5_SUM" >> $GITHUB_OUTPUT
 
       # 比较MD5并决定是否需要提交
       - name: 检查MD5变化
         id: check
         run: |
-          NEW_MD5="${{ steps.generate.outputs.md5_summary }}"
-          PREV_MD5="${{ steps.previous.outputs.prev_md5_summary }}"
+          NEW_MD5="${{ steps.generate.outputs.payload_md5_summary }}"
+          PREV_MD5="${{ steps.previous.outputs.prev_payload_md5_summary }}"
 
           echo "新MD5摘要: $NEW_MD5"
           echo "上次MD5摘要: $PREV_MD5"
 
+          # 对MD5摘要进行排序，确保比较不受文件顺序影响
+          NEW_MD5_SORTED=$(echo "$NEW_MD5" | tr ' ' '\n' | grep -v '^$' | sort | tr '\n' ' ')
+          PREV_MD5_SORTED=$(echo "$PREV_MD5" | tr ' ' '\n' | grep -v '^$' | sort | tr '\n' ' ')
+
+          echo "排序后新MD5: $NEW_MD5_SORTED"
+          echo "排序后上次MD5: $PREV_MD5_SORTED"
+
           # 检查是否有变化
           CHANGED=0
 
-          if [ "$NEW_MD5" != "$PREV_MD5" ]; then
+          if [ "$NEW_MD5_SORTED" != "$PREV_MD5_SORTED" ]; then
             echo "🔄 检测到文件发生变化"
             CHANGED=1
           else
@@ -194,10 +212,8 @@ jobs:
       - name: 提交更改
         if: steps.check.outputs.changed == '1'
         run: |
-          cd scripts
-
-          # 添加所有更改
-          git add .
+          # 添加所有更改（包含 rules 与 scripts）
+          git add rules
 
           # 检查是否有更改需要提交
           if git diff --staged --quiet; then
@@ -207,7 +223,7 @@ jobs:
 
           # 提交更改
           TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
-          MD5_SUMMARY="${{ steps.generate.outputs.md5_summary }}"
+          MD5_SUMMARY="${{ steps.generate.outputs.payload_md5_summary }}"
 
           git commit -m "🤖 自动更新规则文件 - $TIMESTAMP
 
