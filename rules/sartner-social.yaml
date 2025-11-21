@@ -1,7 +1,7 @@
 # NAME: 社交媒体规则 (合并版)
 # DESCRIPTION: 包含Twitter、Facebook等社交媒体规则
-# UPDATED: 2025-11-11 18:59:59
-# MD5 (Payload): 74a03bc02de861ec463fd54934db6237
+# UPDATED: 2025-11-21 15:15:15
+# MD5 (Payload): 9bada05a1fcd3ca577ed418758093c8b
 
 # SOURCES:
 #   - Twitter: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Twitter/Twitter.yaml
@@ -13,14 +13,13 @@
 #   Successful: 3
 #   Failed: 0
 #   Total Rules: 607
-#   Deduplicated: 604
-#   Removed: 3
+#   Deduplicated: 603
+#   Removed: 4
 
 ---
 payload:
 - DOMAIN-SUFFIX,ads-twitter.com
 - DOMAIN-SUFFIX,cms-twdigitalassets.com
-- DOMAIN-SUFFIX,grok.com
 - DOMAIN-SUFFIX,periscope.tv
 - DOMAIN-SUFFIX,pscp.tv
 - DOMAIN-SUFFIX,t.co
