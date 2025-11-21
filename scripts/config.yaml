@@ -102,6 +102,10 @@ rule_groups:
       - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Instagram/Instagram.yaml"
         name: "Instagram"
 
+    filters:
+      exclude_domain_suffixes:
+        - "grok.com"
+
   # -------------------------------------------------------------------------
   # 规则组3: 流媒体规则
   # -------------------------------------------------------------------------
@@ -149,3 +153,42 @@ rule_groups:
 
       - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Hulu/Hulu.yaml"
         name: "Hulu"
+
+  - name: "game-rules"
+    description: "游戏相关规则集合"
+    output: "../rules/sartner-game.yaml"
+
+    header:
+      - "# NAME: 游戏规则 (合并版)"
+      - "# DESCRIPTION: 包含Steam、PlayStation、Xbox、Nintendo、Epic、EA、Origin、Ubisoft、Blizzard、Riot等"
+
+    sources:
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Steam/Steam.yaml"
+        name: "Steam"
+
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/PlayStation/PlayStation.yaml"
+        name: "PlayStation"
+
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Xbox/Xbox.yaml"
+        name: "Xbox"
+
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Nintendo/Nintendo.yaml"
+        name: "Nintendo"
+
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Epic/Epic.yaml"
+        name: "Epic"
+
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/EA/EA.yaml"
+        name: "EA"
+
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Origin/Origin.yaml"
+        name: "Origin"
+
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Ubisoft/Ubisoft.yaml"
+        name: "Ubisoft"
+
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Blizzard/Blizzard.yaml"
+        name: "Blizzard"
+
+      - url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Riot/Riot.yaml"
+        name: "Riot"
