@@ -1,0 +1,64 @@
+# NAME: 直连规则 (手动)
+# 注意事项：本条规则放在所有直连规则后面（除了cncidr）
+
+---
+payload:
+  # === Claude Code Application ===
+  - PROCESS-NAME-REGEX,(?i)^claude.*$
+
+  # 阻止Claude的QUIC连接，强制使用HTTP/HTTPS
+  - AND,((DOMAIN-SUFFIX,claude.ai),(NETWORK,udp)),REJECT
+  - AND,((DOMAIN-SUFFIX,claude.com),(NETWORK,udp)),REJECT
+  - AND,((DOMAIN-SUFFIX,anthropic.com),(NETWORK,udp)),REJECT
+  
+  # === Anthropic / Claude 核心域名 ===
+  - DOMAIN-SUFFIX,anthropic.com
+  - DOMAIN-SUFFIX,claude.ai
+  - DOMAIN-SUFFIX,claude.com
+  - DOMAIN-SUFFIX,clau.de
+  - DOMAIN-SUFFIX,claudeusercontent.com
+  - DOMAIN-SUFFIX,claudemcpcontent.com
+
+  # === Claude 登录 / Cloudflare 验证，建议 exact，不要整个 cloudflare.com ===
+  - DOMAIN,challenges.cloudflare.com
+
+  # === MCP 官方文档，非运行时必需，可选 ===
+  - DOMAIN-SUFFIX,modelcontextprotocol.io
+
+  # === 旧/特定域名：可保留，但多数不是当前核心必需 ===
+  - DOMAIN,servd-anthropic-website.b-cdn.net
+  - DOMAIN,anthropic.com.cdn.cloudflare.net
+  - DOMAIN,anthropic.auth0.com
+  - DOMAIN,anthropic-com.ghost.io
+
+  # === Claude Code / Desktop 相关；前两条已被 suffix 覆盖，写出来是为了可读性 ===
+  - DOMAIN,downloads.claude.ai
+  - DOMAIN,bridge.claudeusercontent.com
+  - DOMAIN,raw.githubusercontent.com
+
+  # 老版本 Claude Code 原生安装器/自动更新可能需要；不用旧版本可不加
+  - DOMAIN,storage.googleapis.com
+
+  # === 官方文档列出的遥测/诊断；不想走遥测也可以不加或直接拦截 ===
+  - DOMAIN-SUFFIX,sentry.io
+  - DOMAIN,browser-intake-us5-datadoghq.com
+  - DOMAIN-SUFFIX,datadoghq.com
+  - DOMAIN-SUFFIX,datadoghq.eu
+
+  # === 可能由前端 SDK / 支持组件使用，建议放在可选区 ===
+  - DOMAIN-SUFFIX,statsigapi.net
+  - DOMAIN-SUFFIX,intercom.io
+  - DOMAIN-SUFFIX,intercomcdn.com
+  - DOMAIN,cdn.usefathom.com
+  - DOMAIN,cdn.growthbook.io
+  - DOMAIN-SUFFIX,growthbook.io
+  - DOMAIN-SUFFIX,sift.com
+  - DOMAIN-SUFFIX,siftscience.com
+
+  # === IP 兜底 ===
+  # 严格客户端访问可用 /23；更宽兜底可保留 /21
+  - IP-CIDR,160.79.104.0/21,no-resolve
+  - IP-CIDR6,2607:6bc0::/48,no-resolve
+
+  # 仅 Mihomo / Clash.Meta / 支持 IP-ASN 的客户端使用
+  - IP-ASN,399358,no-resolve
