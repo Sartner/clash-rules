@@ -2,6 +2,7 @@
 
 ---
 payload:
+  - DOMAIN-SUFFIX,247825.xyz
   - DOMAIN-SUFFIX,myqnapcloud.com
   - DOMAIN-SUFFIX,myqnapcloud.io
   - DOMAIN-SUFFIX,sartner.top
@@ -43,3 +44,14 @@ payload:
   - DOMAIN-SUFFIX,steamcontent.com
   - DOMAIN-SUFFIX,steamusercontent.com
   - DOMAIN-SUFFIX,steamcdn.com
+
+  # amyTelecom 相关域名（来自订阅中的内容）
+  - DOMAIN-SUFFIX,kfzzxcx.com
+  - DOMAIN-SUFFIX,durable0762.com
+  - DOMAIN-SUFFIX,delirium9599.com
+  - DOMAIN-SUFFIX,wrecking7857.com
+  - DOMAIN-SUFFIX,carrousel6917.com
+  - DOMAIN-SUFFIX,simmering3378.com
+  - DOMAIN-SUFFIX,blasphemy4985.com
+  - DOMAIN-SUFFIX,destitute2725.com
+  - DOMAIN-SUFFIX,prolonged3729.com
