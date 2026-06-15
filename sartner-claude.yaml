@@ -26,14 +26,6 @@ payload:
   - DOMAIN,anthropic.auth0.com
   - DOMAIN,anthropic-com.ghost.io
 
-  # === Claude Code / Desktop 相关；前两条已被 suffix 覆盖，写出来是为了可读性 ===
-  - DOMAIN,downloads.claude.ai
-  - DOMAIN,bridge.claudeusercontent.com
-  - DOMAIN,raw.githubusercontent.com
-
-  # 老版本 Claude Code 原生安装器/自动更新可能需要；不用旧版本可不加
-  - DOMAIN,storage.googleapis.com
-
   # === 官方文档列出的遥测/诊断；不想走遥测也可以不加或直接拦截 ===
   - DOMAIN-SUFFIX,sentry.io
   - DOMAIN,browser-intake-us5-datadoghq.com
