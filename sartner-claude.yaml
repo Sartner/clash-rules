@@ -5,11 +5,6 @@
 payload:
   # === Claude Code Application ===
   - PROCESS-NAME-REGEX,(?i)^claude.*$
-
-  # 阻止Claude的QUIC连接，强制使用HTTP/HTTPS
-  - AND,((DOMAIN-SUFFIX,claude.ai),(NETWORK,udp)),REJECT
-  - AND,((DOMAIN-SUFFIX,claude.com),(NETWORK,udp)),REJECT
-  - AND,((DOMAIN-SUFFIX,anthropic.com),(NETWORK,udp)),REJECT
   
   # === Anthropic / Claude 核心域名 ===
   - DOMAIN-SUFFIX,anthropic.com
