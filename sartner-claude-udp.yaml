@@ -1,0 +1,14 @@
+# NAME: CLAUDE UDP 规则组（REJECT）
+
+---
+payload:
+  # === Claude / Anthropic 禁用 UDP/QUIC，强制回落 TCP ===
+  - AND,((DOMAIN-SUFFIX,anthropic.com),(NETWORK,UDP))
+  - AND,((DOMAIN-SUFFIX,claude.ai),(NETWORK,UDP))
+  - AND,((DOMAIN-SUFFIX,claude.com),(NETWORK,UDP))
+  - AND,((DOMAIN-SUFFIX,clau.de),(NETWORK,UDP))
+  - AND,((DOMAIN-SUFFIX,claudeusercontent.com),(NETWORK,UDP))
+  - AND,((DOMAIN-SUFFIX,claudemcpcontent.com),(NETWORK,UDP))
+  - AND,((DOMAIN,challenges.cloudflare.com),(NETWORK,UDP))
+  - AND,((IP-CIDR,160.79.104.0/21),(NETWORK,UDP))
+  - AND,((IP-CIDR6,2607:6bc0::/48),(NETWORK,UDP))
