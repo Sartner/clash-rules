@@ -1,0 +1,8 @@
+# NAME: 测速网站规则，添加成全节点手动选择，方便测速
+# 注意事项：本条规则放在所有直连规则后面（除了cncidr）
+
+---
+payload:
+  - DOMAIN-SUFFIX,speed.cloudflare.com
+  - DOMAIN-SUFFIX,ping0.cc
+  - DOMAIN-SUFFIX,ippure.com
