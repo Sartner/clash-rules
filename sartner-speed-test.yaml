@@ -6,3 +6,4 @@ payload:
   - DOMAIN-SUFFIX,speed.cloudflare.com
   - DOMAIN-SUFFIX,ping0.cc
   - DOMAIN-SUFFIX,ippure.com
+  - DOMAIN-SUFFIX,ipip.net
