@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      PYTHON_VERSION: '3.9'
+      PYTHON_VERSION: '3.12'
       SCRIPTS_DIR: scripts
       OUTPUT_DIR: scripts  # 输出到scripts目录
 
